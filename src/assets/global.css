@@ -7,3 +7,24 @@
 .between{
   justify-content: space-between;
 }
+.mt{
+  margin-top: 5vh;
+}
+.c-white{
+  color: white;
+}
+.center{
+  text-align: center;
+}
+.largefont{
+  font-size: xx-large;
+}
+.smallfont{
+  font-size: x-small;
+}
+.mediumfont{
+  font-size: medium;
+}
+.likefont{
+  font-family: cursive;
+}
