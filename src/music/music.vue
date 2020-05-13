@@ -14,10 +14,6 @@
       <p class="author likefont mediumfont">{{info[item].artists[0].name}}</p>
       <img class="songphoto"
            :src="info[item].album.picUrl" />
-      <!-- <audio :src='info[item].url'
-             controls='true'>
-        您的浏览器不支持 audio 标签。
-      </audio> -->
       <newAudio :songval='info[item]'></newAudio>
     </div>
   </div>
