@@ -36,6 +36,15 @@ export default {
     Typeahead,
     axioscom,
     music
+  },
+  created () {
+    // 刷新缓存信息
+    if (sessionStorage.getItem('store')) {
+      this.$store.replaceState(Object.assign({}, this.$store.state, JSON.parse(sessionStorage.getItem('store'))))
+    }
+    window.addEventListener('beforeunload', () => {
+      sessionStorage.setItem('store', JSON.stringify(this.$store.state))
+    })
   }
 }
 </script>

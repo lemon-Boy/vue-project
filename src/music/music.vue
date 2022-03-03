@@ -1,44 +1,76 @@
 <template>
   <div class="box">
-    <input type="text"
-           placeholder="Search" />
+    <input type="text" placeholder="Search" v-model="searchKeyword" @keyup.enter="search(searchKeyword)"/>
     <div class="title flex around mt">
       <button type="button"></button>
       <p></p>
       <button type="button"></button>
     </div>
-    <div v-for="(index,item) in info"
-         :key="item.id"
-         class="voicebox center">
-      <p class="songname likefont c-white largefont">{{info[item].name}}</p>
-      <p class="author likefont mediumfont">{{info[item].artists[0].name}}</p>
-      <img class="songphoto"
-           :src="info[item].album.picUrl" />
-      <newAudio :songval='info[item]'></newAudio>
-    </div>
+<!--    <div v-for="(index,item) in info"-->
+<!--         :key="item.id"-->
+<!--         class="voicebox center">-->
+<!--      <p class="songname likefont c-white largefont">{{info[item].name}}</p>-->
+<!--      <p class="author likefont mediumfont">{{info[item].artists[0].name}}</p>-->
+<!--      <img class="songphoto"-->
+<!--           :src="info[item].album.picUrl" />-->
+<!--      <newAudio :songval='info[item]'></newAudio>-->
+<!--    </div>-->
+    <play-bar></play-bar>
+    <singlist :songs="searchResult.songs" ref="bottomSheet"></singlist>
   </div>
 </template>
 <script>
-import newAudio from './components/audio'
+import { mapMutations } from 'vuex'
+import playBar from './components/playBar'
+import singlist from './singList/singlist'
 export default {
   name: 'music',
-  components: { newAudio },
+  components: { singlist, playBar },
   data () {
     return {
-      info: null
+      searchResult: {},
+      info: null,
+      searchKeyword: '你不爱我我就爱别人'
     }
   },
   mounted () {
-    this.$axios({
-      method: 'get',
-      url: '/api/search?keyword=周杰伦' // 接口地址
-    })
-      .then(response => {
-        this.info = response.data.data.list.splice(0, 1)
-        console.log(this.info)
+    // this.$axios({
+    //   method: 'get',
+    //   // url: '/api/search?keyword=周杰伦' // 接口地址
+    //   url: '/api?data=&msg=周杰伦&n='
+    // })
+    //   .then(response => {
+    //     this.info = response.data.data.list.splice(0, 1)
+    //     console.log(this.info)
+    //   })
+    //   .catch(error => { console.log(error, 'error', this.errored = true) }) // 失败的返回
+    //   .finally(() => { this.loading = false })
+  },
+  methods: {
+    ...mapMutations([
+      'play',
+      'pause',
+      'playNext',
+      'showSongList'
+    ]),
+    search (param) {
+      console.log(param)
+      this.$api.singStatusApi.search(param).then(res => {
+        if (res.data.code === 200) {
+          console.log(res.data.result.songs, res.data.result.songCount)
+          this.searchResult = res.data.result
+          this.showList(res.data.result)
+        }
       })
-      .catch(error => { console.log(error, 'error', this.errored = true) }) // 失败的返回
-      .finally(() => { this.loading = false })
+    },
+    showList (params) {
+      // this.info = params.songs
+      this.showSongList(params.songs)
+      this.$refs.bottomSheet.show()
+    }
+  },
+  beforeUpdate () {
+    console.log('beforeupdate', this.$store.state)
   }
 }
 </script>
@@ -80,24 +112,6 @@ button {
   &:active {
     background: linear-gradient(315deg, #3e4150, #4a4d5f);
     box-shadow: inset 1px 1px 5px #1c1d24, inset 1px 1px 5px #6e738ecc;
-  }
-}
-.songname {
-  margin: 5vh 0;
-}
-.songphoto {
-  height: 200px;
-  width: 200px;
-  border-radius: 50%;
-  transition: 5s;
-  animation: songphoto 20s linear infinite; // 指定旋转速度及动画
-}
-@keyframes songphoto {
-  from {
-    transform: rotate(0);
-  }
-  to {
-    transform: rotate(360deg);
   }
 }
 </style>
